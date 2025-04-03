@@ -18,9 +18,10 @@ package org.jboss.as.quickstarts.kitchensink.test;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
-
+import jakarta.json.JsonArray;
+import jakarta.json.JsonReader;
+import java.io.StringReader;
 import java.util.logging.Logger;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -71,7 +72,28 @@ public class RemoteMemberRegistrationIT {
                 .build();
         HttpResponse response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         Assert.assertEquals(200, response.statusCode());
-        Assert.assertEquals("", response.body().toString() );
+        Assert.assertEquals("", response.body().toString());
+    }
+
+    @Test
+    public void testGetAllMembers() throws Exception {
+        HttpRequest request = HttpRequest.newBuilder(getHTTPEndpoint())
+                .GET()
+                .build();
+        HttpResponse response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        Assert.assertEquals(200, response.statusCode());
+        
+        // Parse the JSON response
+        JsonReader jsonReader = Json.createReader(new StringReader(response.body().toString()));
+        JsonArray members = jsonReader.readArray();
+        Assert.assertNotNull("Response should be a JSON array", members);
+        
+        // Log the members for debugging
+        log.info("Found " + members.size() + " members");
+        for (int i = 0; i < members.size(); i++) {
+            JsonObject member = members.getJsonObject(i);
+            log.info("Member " + i + ": " + member);
+        }
     }
 
 }
