@@ -1,97 +1,57 @@
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+package org.jboss.as.quickstarts.kitchensink.data;
 
-import jakarta.persistence.*;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import org.jboss.as.quickstarts.kitchensink.data.MemberRepository;
 import org.jboss.as.quickstarts.kitchensink.model.Member;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.*;
+import java.util.List;
 
-@ApplicationScoped
-public class MemberRepositoryTest {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    @Inject
-    @Mock
-    private EntityManager em;
+@DataJpaTest
+class MemberRepositoryTest {
 
-    @InjectMocks
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAll();
+    }
+
+    @Autowired
     private MemberRepository memberRepository;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
-    void testFindById() {
-        Member mockMember = new Member();
-        mockMember.setId(1L);
-
-        when(em.find(Member.class, 1L)).thenReturn(mockMember);
-
-        Member result = memberRepository.findById(1L);
-
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        verify(em).find(Member.class, 1L);
-    }
-
-    @Test
+    @DisplayName("Should save and find member by email")
     void testFindByEmail() {
-        String email = "test@example.com";
-        Member mockMember = new Member();
-        mockMember.setEmail(email);
+        Member member = new Member();
+        member.setName("Tomasz");
+        member.setEmail("tomasz@example.com");
+        member.setPhoneNumber("12345678932");
 
-        CriteriaBuilder cb = mock(CriteriaBuilder.class);
-        CriteriaQuery<Member> cq = mock(CriteriaQuery.class);
-        Root<Member> root = mock(Root.class);
-        TypedQuery<Member> tq = mock(TypedQuery.class);
+        memberRepository.save(member);
 
-        when(em.getCriteriaBuilder()).thenReturn(cb);
-        when(cb.createQuery(Member.class)).thenReturn(cq);
-        when(cq.from(Member.class)).thenReturn(root);
-        when(cb.equal(any(), eq(email))).thenReturn(mock(Predicate.class));
-        when(cq.select(root)).thenReturn(cq);
-        when(cq.where(any(Predicate.class))).thenReturn(cq);
-        when(em.createQuery(cq)).thenReturn(tq);
-        when(tq.getSingleResult()).thenReturn(mockMember);
+        Member found = memberRepository.findByEmail("tomasz@example.com");
 
-        Member result = memberRepository.findByEmail(email);
-
-        assertNotNull(result);
-        assertEquals(email, result.getEmail());
+        assertThat(found).isNotNull();
+        assertThat(found.getName()).isEqualTo("Tomasz");
     }
 
     @Test
+    @DisplayName("Should return all members ordered by name, including predefined")
     void testFindAllOrderedByName() {
-        List<Member> mockList = List.of(new Member(), new Member());
+        Member memberZ = new Member();
+        memberZ.setName("Zbigniew");
+        memberZ.setEmail("zbigniew@example.com");
+        memberZ.setPhoneNumber("99999999921");
 
-        CriteriaBuilder cb = mock(CriteriaBuilder.class);
-        CriteriaQuery<Member> cq = mock(CriteriaQuery.class);
-        Root<Member> root = mock(Root.class);
-        TypedQuery<Member> tq = mock(TypedQuery.class);
+        memberRepository.save(memberZ);
 
-        when(em.getCriteriaBuilder()).thenReturn(cb);
-        when(cb.createQuery(Member.class)).thenReturn(cq);
-        when(cq.from(Member.class)).thenReturn(root);
-        when(cb.asc(any())).thenReturn(mock(Order.class));
-        when(cq.select(root)).thenReturn(cq);
-        when(cq.orderBy(any(Order.class))).thenReturn(cq);
-        when(em.createQuery(cq)).thenReturn(tq);
-        when(tq.getResultList()).thenReturn(mockList);
+        List<Member> ordered = memberRepository.findAllOrderedByName();
 
-        List<Member> result = memberRepository.findAllOrderedByName();
-
-        assertEquals(2, result.size());
+        assertThat(ordered).hasSizeGreaterThanOrEqualTo(2); // At least predefined + 1
+        assertThat(ordered.get(0).getName()).isEqualTo("John Smith"); // alphabetically first
     }
 }
