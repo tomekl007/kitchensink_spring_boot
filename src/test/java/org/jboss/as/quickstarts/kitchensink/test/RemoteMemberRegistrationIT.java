@@ -17,17 +17,19 @@
 package org.jboss.as.quickstarts.kitchensink.test;
 
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonArray;
-import jakarta.json.JsonReader;
+import jakarta.json.JsonObject;
+
 import java.io.StringReader;
 import java.util.logging.Logger;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import jakarta.json.JsonReader;
 import org.jboss.as.quickstarts.kitchensink.model.Member;
 import org.junit.Assert;
 import org.junit.Test;
