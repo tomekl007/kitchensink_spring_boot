@@ -7,6 +7,7 @@ A starter Spring Boot web application demonstrating various features including M
 - Java 21 or later
 - Maven 3.8 or later
 - MongoDB 7.0 or later
+- Docker (required for running integration tests)
 
 ### Installing MongoDB on macOS
 
@@ -59,6 +60,33 @@ mvn spring-boot:run
 
 3. Access the application at: http://localhost:8080/kitchensink
 
+## Running Tests
+
+### All Tests (Unit Tests + Integration Tests)
+To run all tests including both unit tests and integration tests:
+```bash
+mvn test
+```
+
+### Unit Tests Only
+To run only unit tests (excluding integration tests):
+```bash
+mvn test "-Dtest=*Test"
+```
+
+### Integration Tests Only
+Integration tests require Docker to be installed and running on your machine. They use Testcontainers to automatically spin up a MongoDB container.
+
+To run only integration tests:
+```bash
+mvn test "-Dtest=*IT"
+```
+
+To run tests with debug output:
+```bash
+mvn test -Dspring-boot.test.verbose=true
+```
+
 ## Features
 
 - MongoDB database integration
@@ -66,6 +94,7 @@ mvn spring-boot:run
 - HTML5 based UI using Thymeleaf templates
 - Bean Validation
 - MongoDB repositories and services
+- Integration tests with Testcontainers
 
 ## API Endpoints
 
@@ -110,6 +139,15 @@ lsof -i :27017
 # Windows
 netstat -an | findstr "27017"
 ```
+
+### Integration Test Issues
+
+If integration tests fail:
+
+1. Ensure Docker is installed and running
+2. Check Docker logs for any container issues
+3. Verify you have sufficient disk space for Docker containers
+4. Make sure ports 27017 (MongoDB) are not in use by other applications
 
 ## License
 
