@@ -17,6 +17,7 @@
 package org.jboss.as.quickstarts.kitchensink.service;
 
 import org.jboss.as.quickstarts.kitchensink.model.Member;
+import org.jboss.as.quickstarts.kitchensink.data.MemberRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,14 +29,19 @@ public class MemberRegistration {
 
     private final Logger log = Logger.getLogger(MemberRegistration.class.getName());
     private final ApplicationEventPublisher eventPublisher;
+    private final MemberRepository memberRepository;
 
-    public MemberRegistration(ApplicationEventPublisher eventPublisher) {
+    public MemberRegistration(ApplicationEventPublisher eventPublisher, MemberRepository memberRepository) {
         this.eventPublisher = eventPublisher;
+        this.memberRepository = memberRepository;
     }
 
     @Transactional
     public void register(Member member) throws Exception {
         log.info("Registering " + member.getName());
+        // Save the member to the database
+        memberRepository.save(member);
+        // Publish an event for any listeners
         eventPublisher.publishEvent(member);
     }
 }

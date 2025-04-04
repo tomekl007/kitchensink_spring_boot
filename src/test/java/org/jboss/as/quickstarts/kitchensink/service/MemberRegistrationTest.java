@@ -1,6 +1,7 @@
 package org.jboss.as.quickstarts.kitchensink.service;
 
 import org.jboss.as.quickstarts.kitchensink.model.Member;
+import org.jboss.as.quickstarts.kitchensink.data.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,9 @@ class MemberRegistrationTest {
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
+    @Mock
+    private MemberRepository memberRepository;
+
     @InjectMocks
     private MemberRegistration memberRegistration;
 
@@ -33,16 +37,21 @@ class MemberRegistrationTest {
 
     @Test
     void register_SuccessfulRegistration_PublishesEvent() throws Exception {
+        // Arrange
+        when(memberRepository.save(any(Member.class))).thenReturn(testMember);
+
         // Act
         memberRegistration.register(testMember);
 
         // Assert
+        verify(memberRepository).save(testMember);
         verify(eventPublisher).publishEvent(testMember);
     }
 
     @Test
     void register_EventPublishingFails_ThrowsException() {
         // Arrange
+        when(memberRepository.save(any(Member.class))).thenReturn(testMember);
         doThrow(new RuntimeException("Publishing failed"))
                 .when(eventPublisher).publishEvent(any(Member.class));
 
@@ -52,6 +61,7 @@ class MemberRegistrationTest {
         });
 
         assertEquals("Publishing failed", exception.getMessage());
+        verify(memberRepository).save(testMember);
     }
 
     @Test
@@ -61,6 +71,7 @@ class MemberRegistrationTest {
             memberRegistration.register(null);
         });
 
+        verify(memberRepository, never()).save(any());
         verify(eventPublisher, never()).publishEvent(any());
     }
 }

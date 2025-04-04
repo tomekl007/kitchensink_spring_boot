@@ -58,6 +58,7 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone Number</th>
+                            <th>REST URL</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,8 +67,18 @@
                             <td th:text="${member.name}"></td>
                             <td th:text="${member.email}"></td>
                             <td th:text="${member.phoneNumber}"></td>
+                            <td>
+                                <a th:href="@{/rest/members/{id}(id=${member.id})}" th:text="@{'/rest/members/' + ${member.id}}"></a>
+                            </td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="5">
+                                REST URL for all members: <a th:href="@{/rest/members}">/rest/members</a>
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>

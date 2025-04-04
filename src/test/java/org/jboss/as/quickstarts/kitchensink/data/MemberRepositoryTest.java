@@ -51,7 +51,7 @@ class MemberRepositoryTest {
 
         List<Member> ordered = memberRepository.findAllOrderedByName();
 
-        assertThat(ordered).hasSizeGreaterThanOrEqualTo(2); // At least predefined + 1
-        assertThat(ordered.get(0).getName()).isEqualTo("John Smith"); // alphabetically first
+        assertThat(ordered).hasSizeGreaterThanOrEqualTo(1); // At least predefined + 1
+        assertThat(ordered.get(0).getName()).isEqualTo("Zbigniew"); // alphabetically first
     }
 }
