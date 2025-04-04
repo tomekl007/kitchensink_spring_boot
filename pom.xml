@@ -30,8 +30,8 @@
     <artifactId>kitchensink</artifactId>
     <version>8.0.0.GA</version>
     <packaging>war</packaging>
-    <name>Kitchensink Spring Boot Application</name>
-    <description>A Spring Boot web application project</description>
+    <name>Quickstart: kitchensink</name>
+    <description>A starter Spring Boot web application project</description>
 
     <properties>
         <java.version>21</java.version>
