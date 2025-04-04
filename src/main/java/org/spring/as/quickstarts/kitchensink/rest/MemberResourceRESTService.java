@@ -40,7 +40,7 @@ public class MemberResourceRESTService {
     }
 
     @GetMapping("/{id}")
-    public Member lookupMemberById(@PathVariable("id") long id) {
+    public Member lookupMemberById(@PathVariable("id") String id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }

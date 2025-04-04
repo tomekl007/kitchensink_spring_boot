@@ -16,32 +16,26 @@
  */
 package org.spring.as.quickstarts.kitchensink.model;
 
-import java.io.Serializable;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import jakarta.xml.bind.annotation.XmlRootElement;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 
-@SuppressWarnings("serial")
-@Entity
-@XmlRootElement
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = "email"))
-public class Member implements Serializable {
+@Document(collection = "members")
+public class Member {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    @JsonProperty("_id")
+    private String id;
 
     @NotNull
     @Size(min = 1, max = 25)
@@ -51,19 +45,20 @@ public class Member implements Serializable {
     @NotNull
     @NotEmpty
     @Email
+    @Indexed(unique = true)
     private String email;
 
     @NotNull
     @Size(min = 10, max = 12)
     @Digits(fraction = 0, integer = 12)
-    @Column(name = "phone_number")
+    @Field("phone_number")
     private String phoneNumber;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

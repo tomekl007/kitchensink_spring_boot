@@ -1,33 +1,38 @@
 package org.spring.as.quickstarts.kitchensink.config;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.spring.as.quickstarts.kitchensink.model.Member;
 import org.spring.as.quickstarts.kitchensink.data.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
-@Component
-public class DataInitializer implements CommandLineRunner {
+import java.io.IOException;
+import java.util.List;
 
-    private final MemberRepository memberRepository;
+@Configuration
+public class DataInitializer {
 
     @Autowired
-    public DataInitializer(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
+    private MemberRepository memberRepository;
 
-    @Override
-    public void run(String... args) {
-        // Check if the database is empty
-        if (memberRepository.count() == 0) {
-            // Create and save the initial member
-            Member johnSmith = new Member();
-            johnSmith.setName("John Smith");
-            johnSmith.setEmail("john.smith@mailinator.com");
-            johnSmith.setPhoneNumber("2125551212");
-            
-            memberRepository.save(johnSmith);
-            System.out.println("Initial member 'John Smith' has been added to the database.");
-        }
+    @Bean
+    public CommandLineRunner initData(MongoTemplate mongoTemplate) {
+        return args -> {
+            // Drop existing collection
+            mongoTemplate.dropCollection("members");
+
+            // Load initial data
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            ClassPathResource resource = new ClassPathResource("data/members.json");
+            List<Member> members = mapper.readValue(resource.getInputStream(), new TypeReference<List<Member>>() {});
+            memberRepository.saveAll(members);
+        };
     }
 } 

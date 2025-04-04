@@ -5,22 +5,28 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+@DataMongoTest
 class MemberRepositoryTest {
-
-    @AfterEach
-    void tearDown() {
-        memberRepository.deleteAll();
-    }
 
     @Autowired
     private MemberRepository memberRepository;
+    
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @AfterEach
+    void tearDown() {
+        mongoTemplate.dropCollection("members");
+    }
 
     @Test
     @DisplayName("Should save and find member by email")
