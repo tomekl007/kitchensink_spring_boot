@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Boot Kitchensink</title>
+    <link rel="stylesheet" th:href="@{/css/screen.css}">
+</head>
+<body>
+    <div id="container">
+        <div id="content">
+            <h1>Welcome to Spring Boot Kitchensink</h1>
+            <p>
+                This is your <span class="bold">Kitchensink</span> application, powered by Spring Boot.
+            </p>
+            <p>
+                This application demonstrates the use of Spring Boot with modern web development practices.
+            </p>
+            
+            <!-- Flash Messages -->
+            <div th:if="${message}" th:class="${messageType == 'success' ? 'success' : 'error'}" class="message">
+                <p th:text="${message}"></p>
+            </div>
+            
+            <div class="register">
+                <h2>Register</h2>
+                <form th:action="@{/register}" method="post" th:object="${newMember}">
+                    <div class="field">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" th:field="*{name}" />
+                        <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                    </div>
+                    <div class="field">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" th:field="*{email}" />
+                        <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                    </div>
+                    <div class="field">
+                        <label for="phoneNumber">Phone Number:</label>
+                        <input type="text" id="phoneNumber" th:field="*{phoneNumber}" />
+                        <span class="error" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></span>
+                    </div>
+                    <div class="button">
+                        <input type="submit" value="Register" />
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Registered Members List -->
+            <div class="members">
+                <h2>Registered Members</h2>
+                <div th:if="${#lists.isEmpty(members)}">
+                    <p>No registered members.</p>
+                </div>
+                <table th:if="${not #lists.isEmpty(members)}" class="simpletablestyle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="member : ${members}">
+                            <td th:text="${member.id}"></td>
+                            <td th:text="${member.name}"></td>
+                            <td th:text="${member.email}"></td>
+                            <td th:text="${member.phoneNumber}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="aside">
+            <p>Learn more about Spring Boot.</p>
+            <ul>
+                <li><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/">Spring Boot Documentation</a></li>
+                <li><a href="https://spring.io/projects/spring-boot">Spring Boot Project</a></li>
+                <li><a href="https://start.spring.io">Spring Initializr</a></li>
+            </ul>
+        </div>
+        <div id="footer">
+            <p>
+                This project was generated using Spring Boot.<br />
+            </p>
+        </div>
+    </div>
+</body>
+</html> 

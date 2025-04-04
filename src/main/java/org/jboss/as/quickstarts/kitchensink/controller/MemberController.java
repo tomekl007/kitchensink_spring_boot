@@ -16,49 +16,70 @@
  */
 package org.jboss.as.quickstarts.kitchensink.controller;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.inject.Model;
-import jakarta.enterprise.inject.Produces;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import org.jboss.as.quickstarts.kitchensink.model.Member;
 import org.jboss.as.quickstarts.kitchensink.service.MemberRegistration;
+import org.jboss.as.quickstarts.kitchensink.data.MemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-// The @Model stereotype is a convenience mechanism to make this a request-scoped bean that has an
-// EL name
-// Read more about the @Model stereotype in this FAQ:
-// http://www.cdi-spec.org/faq/#accordion6
-@Model
+import jakarta.validation.Valid;
+import java.util.List;
+
+@Controller
 public class MemberController {
 
-    @Inject
-    private FacesContext facesContext;
+    private final MemberRegistration memberRegistration;
+    private final MemberRepository memberRepository;
 
-    @Inject
-    private MemberRegistration memberRegistration;
-
-    @Produces
-    @Named
-    private Member newMember;
-
-    @PostConstruct
-    public void initNewMember() {
-        newMember = new Member();
+    @Autowired
+    public MemberController(MemberRegistration memberRegistration, MemberRepository memberRepository) {
+        this.memberRegistration = memberRegistration;
+        this.memberRepository = memberRepository;
     }
 
-    public void register() throws Exception {
+    @ModelAttribute("newMember")
+    public Member newMember() {
+        return new Member();
+    }
+
+    @GetMapping("/")
+    public String index(Model model) {
+        List<Member> members = memberRepository.findAllOrderedByName();
+        model.addAttribute("members", members);
+        return "index";
+    }
+
+    @GetMapping("/index.jsf")
+    public String indexJsf(Model model) {
+        List<Member> members = memberRepository.findAllOrderedByName();
+        model.addAttribute("members", members);
+        return "index";
+    }
+
+    @PostMapping("/register")
+    public String register(@Valid @ModelAttribute("newMember") Member member, 
+                          BindingResult bindingResult, 
+                          RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "index";
+        }
+        
         try {
-            memberRegistration.register(newMember);
-            FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO, "Registered!", "Registration successful");
-            facesContext.addMessage(null, m);
-            initNewMember();
+            memberRegistration.register(member);
+            redirectAttributes.addFlashAttribute("message", "Registration successful!");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            return "redirect:/";
         } catch (Exception e) {
             String errorMessage = getRootErrorMessage(e);
-            FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMessage, "Registration unsuccessful");
-            facesContext.addMessage(null, m);
+            redirectAttributes.addFlashAttribute("message", errorMessage);
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/";
         }
     }
 
@@ -80,5 +101,4 @@ public class MemberController {
         // This is the root cause message
         return errorMessage;
     }
-
 }

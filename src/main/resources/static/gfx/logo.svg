@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="60" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .text { font-family: Arial, sans-serif; font-weight: bold; }
+    .title { font-size: 24px; fill: #4a6baf; }
+    .subtitle { font-size: 14px; fill: #666; }
+  </style>
+  <rect x="10" y="10" width="40" height="40" rx="5" fill="#4a6baf" />
+  <text x="60" y="35" class="text title">Member</text>
+  <text x="60" y="50" class="text subtitle">Management System</text>
+</svg> 
