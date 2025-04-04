@@ -9,6 +9,30 @@ A starter Spring Boot web application demonstrating various features including M
 - MongoDB 7.0 or later
 - Docker (required for running integration tests)
 
+## Project Structure
+
+```
+src/
+├── main/
+│   ├── java/
+│   │   └── org/spring/as/quickstarts/kitchensink/
+│   │       ├── config/
+│   │       ├── controller/
+│   │       ├── data/
+│   │       ├── model/
+│   │       └── service/
+│   └── resources/
+│       ├── data/
+│       │   └── members.json    # Initial data for MongoDB
+│       ├── static/
+│       ├── templates/
+│       └── application.properties
+└── test/
+    └── java/
+        └── org/spring/as/quickstarts/kitchensink/
+            └── test/
+```
+
 ### Installing MongoDB on macOS
 
 1. Install MongoDB using Homebrew:
