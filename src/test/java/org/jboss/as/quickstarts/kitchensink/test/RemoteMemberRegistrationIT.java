@@ -1,17 +1,13 @@
 package org.jboss.as.quickstarts.kitchensink.test;
 
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
-import java.io.StringReader;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RemoteMemberRegistrationIT {
 
     private static final Logger log = Logger.getLogger(RemoteMemberRegistrationIT.class.getName());
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private URI getHttpEndpoint() {
         String host = getServerHost();
@@ -27,7 +24,7 @@ class RemoteMemberRegistrationIT {
         }
         try {
             return new URI(host + "/rest/members");
-        } catch (URISyntaxException ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("Invalid URI", ex);
         }
     }
@@ -42,15 +39,15 @@ class RemoteMemberRegistrationIT {
 
     @Test
     void shouldRegisterNewMemberSuccessfully() throws Exception {
-        JsonObject json = Json.createObjectBuilder()
-                .add("name", "Jane Doe")
-                .add("email", "jane@mailinator.com")
-                .add("phoneNumber", "2125551234")
-                .build();
+        Map<String, Object> json = Map.of(
+                "name", "Jane Doe",
+                "email", "jane@mailinator.com",
+                "phoneNumber", "2125551234"
+        );
 
         HttpRequest request = HttpRequest.newBuilder(getHttpEndpoint())
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
+                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(json)))
                 .build();
 
         HttpResponse<String> response = HttpClient.newHttpClient()
@@ -71,15 +68,12 @@ class RemoteMemberRegistrationIT {
 
         assertEquals(200, response.statusCode(), "Expected HTTP status 200");
 
-        try (JsonReader jsonReader = Json.createReader(new StringReader(response.body()))) {
-            JsonArray members = jsonReader.readArray();
-            assertNotNull(members, "Response should be a JSON array");
+        var members = objectMapper.readTree(response.body());
+        assertTrue(members.isArray(), "Expected a JSON array");
 
-            log.info("Found " + members.size() + " members");
-            for (int i = 0; i < members.size(); i++) {
-                JsonObject member = members.getJsonObject(i);
-                log.info("Member " + i + ": " + member);
-            }
+        log.info("Found " + members.size() + " members");
+        for (int i = 0; i < members.size(); i++) {
+            log.info("Member " + i + ": " + members.get(i).toPrettyString());
         }
     }
 }
