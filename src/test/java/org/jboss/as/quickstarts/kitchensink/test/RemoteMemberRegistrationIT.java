@@ -1,44 +1,26 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
- * contributors by the @authors tag. See the copyright.txt in the
- * distribution for a full listing of individual contributors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.jboss.as.quickstarts.kitchensink.test;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
-import java.util.logging.Logger;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.logging.Logger;
 
-import jakarta.json.JsonReader;
-import org.jboss.as.quickstarts.kitchensink.model.Member;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class RemoteMemberRegistrationIT {
+class RemoteMemberRegistrationIT {
 
     private static final Logger log = Logger.getLogger(RemoteMemberRegistrationIT.class.getName());
 
-    protected URI getHTTPEndpoint() {
+    private URI getHttpEndpoint() {
         String host = getServerHost();
         if (host == null) {
             host = "http://localhost:8080/kitchensink";
@@ -46,7 +28,7 @@ public class RemoteMemberRegistrationIT {
         try {
             return new URI(host + "/rest/members");
         } catch (URISyntaxException ex) {
-            throw new RuntimeException(ex);
+            throw new RuntimeException("Invalid URI", ex);
         }
     }
 
@@ -59,43 +41,45 @@ public class RemoteMemberRegistrationIT {
     }
 
     @Test
-    public void testRegister() throws Exception {
-        Member newMember = new Member();
-        newMember.setName("Jane Doe");
-        newMember.setEmail("jane@mailinator.com");
-        newMember.setPhoneNumber("2125551234");
+    void shouldRegisterNewMemberSuccessfully() throws Exception {
         JsonObject json = Json.createObjectBuilder()
                 .add("name", "Jane Doe")
                 .add("email", "jane@mailinator.com")
-                .add("phoneNumber", "2125551234").build();
-        HttpRequest request = HttpRequest.newBuilder(getHTTPEndpoint())
+                .add("phoneNumber", "2125551234")
+                .build();
+
+        HttpRequest request = HttpRequest.newBuilder(getHttpEndpoint())
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
                 .build();
-        HttpResponse response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        Assert.assertEquals(200, response.statusCode());
-        Assert.assertEquals("", response.body().toString());
+
+        HttpResponse<String> response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, response.statusCode(), "Expected HTTP status 200");
+        assertTrue(response.body().isEmpty(), "Expected empty response body");
     }
 
     @Test
-    public void testGetAllMembers() throws Exception {
-        HttpRequest request = HttpRequest.newBuilder(getHTTPEndpoint())
+    void shouldReturnAllRegisteredMembers() throws Exception {
+        HttpRequest request = HttpRequest.newBuilder(getHttpEndpoint())
                 .GET()
                 .build();
-        HttpResponse response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        Assert.assertEquals(200, response.statusCode());
-        
-        // Parse the JSON response
-        JsonReader jsonReader = Json.createReader(new StringReader(response.body().toString()));
-        JsonArray members = jsonReader.readArray();
-        Assert.assertNotNull("Response should be a JSON array", members);
-        
-        // Log the members for debugging
-        log.info("Found " + members.size() + " members");
-        for (int i = 0; i < members.size(); i++) {
-            JsonObject member = members.getJsonObject(i);
-            log.info("Member " + i + ": " + member);
+
+        HttpResponse<String> response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, response.statusCode(), "Expected HTTP status 200");
+
+        try (JsonReader jsonReader = Json.createReader(new StringReader(response.body()))) {
+            JsonArray members = jsonReader.readArray();
+            assertNotNull(members, "Response should be a JSON array");
+
+            log.info("Found " + members.size() + " members");
+            for (int i = 0; i < members.size(); i++) {
+                JsonObject member = members.getJsonObject(i);
+                log.info("Member " + i + ": " + member);
+            }
         }
     }
-
 }
