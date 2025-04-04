@@ -1,4 +1,4 @@
-package org.jboss.as.quickstarts.kitchensink.test;
+package org.spring.as.quickstarts.kitchensink.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

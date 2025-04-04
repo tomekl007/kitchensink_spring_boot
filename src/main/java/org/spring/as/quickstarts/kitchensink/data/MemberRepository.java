@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.as.quickstarts.kitchensink.data;
+package org.spring.as.quickstarts.kitchensink.data;
 
-import org.jboss.as.quickstarts.kitchensink.model.Member;
+import org.spring.as.quickstarts.kitchensink.model.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

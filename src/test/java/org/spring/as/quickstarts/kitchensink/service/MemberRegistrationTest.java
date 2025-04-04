@@ -1,7 +1,7 @@
-package org.jboss.as.quickstarts.kitchensink.service;
+package org.spring.as.quickstarts.kitchensink.service;
 
-import org.jboss.as.quickstarts.kitchensink.model.Member;
-import org.jboss.as.quickstarts.kitchensink.data.MemberRepository;
+import org.spring.as.quickstarts.kitchensink.model.Member;
+import org.spring.as.quickstarts.kitchensink.data.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

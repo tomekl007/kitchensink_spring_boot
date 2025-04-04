@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.as.quickstarts.kitchensink.data;
+package org.spring.as.quickstarts.kitchensink.data;
 
 import jakarta.annotation.PostConstruct;
-import org.jboss.as.quickstarts.kitchensink.model.Member;
+import org.spring.as.quickstarts.kitchensink.model.Member;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package org.jboss.as.quickstarts.kitchensink;
+package org.spring.as.quickstarts.kitchensink;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import java.util.logging.Logger;
 
 @SpringBootApplication
-@EntityScan("org.jboss.as.quickstarts.kitchensink.model")
-@EnableJpaRepositories("org.jboss.as.quickstarts.kitchensink.data")
+@EntityScan("org.spring.as.quickstarts.kitchensink.model")
+@EnableJpaRepositories("org.spring.as.quickstarts.kitchensink.data")
 public class KitchensinkApplication {
 
     public static void main(String[] args) {

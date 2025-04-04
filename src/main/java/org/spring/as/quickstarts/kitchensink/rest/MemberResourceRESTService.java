@@ -1,8 +1,8 @@
-package org.jboss.as.quickstarts.kitchensink.rest;
+package org.spring.as.quickstarts.kitchensink.rest;
 
-import org.jboss.as.quickstarts.kitchensink.data.MemberRepository;
-import org.jboss.as.quickstarts.kitchensink.model.Member;
-import org.jboss.as.quickstarts.kitchensink.service.MemberRegistration;
+import org.spring.as.quickstarts.kitchensink.data.MemberRepository;
+import org.spring.as.quickstarts.kitchensink.model.Member;
+import org.spring.as.quickstarts.kitchensink.service.MemberRegistration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
