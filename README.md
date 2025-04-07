@@ -6,7 +6,7 @@ A starter Spring Boot web application demonstrating various features including M
 
 The application follows a layered architecture pattern:
 
-![Application Architecture](docs/diagrams/architecture.png)
+![Application Architecture](docs/diagrams/Architecture.png)
 
 ### Components
 
