@@ -1,0 +1,60 @@
+@startuml Architecture
+
+!theme plain
+skinparam componentStyle rectangle
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+package "Spring Boot Application" {
+    [KitchensinkApplication] as app
+    package "Web Layer" {
+        [MemberController] as controller
+    }
+    package "Service Layer" {
+        [MemberRegistration] as service
+    }
+    package "Data Layer" {
+        [MemberRepository] as repository
+        [MongoTemplate] as mongoTemplate
+    }
+    package "Model" {
+        [Member] as model
+    }
+    package "Configuration" {
+        [DataInitializer] as initializer
+    }
+}
+
+database "MongoDB" {
+    [members collection] as collection
+}
+
+[Browser] as browser
+[HTTP] as http
+
+browser --> http
+http --> controller
+controller --> service
+service --> repository
+repository --> mongoTemplate
+mongoTemplate --> collection
+initializer --> mongoTemplate
+initializer --> model
+
+note right of app
+  Spring Boot Application
+  - Web UI (Thymeleaf)
+  - REST API
+  - MongoDB Integration
+  - Form Validation
+end note
+
+note right of collection
+  MongoDB Database
+  - Document Storage
+  - Auto-indexing
+  - Replica Set Support
+end note
+
+@enduml 

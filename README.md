@@ -2,6 +2,39 @@
 
 A starter Spring Boot web application demonstrating various features including MongoDB integration, form validation, and REST services.
 
+## Architecture
+
+The application follows a layered architecture pattern:
+
+![Application Architecture](docs/diagrams/architecture.png)
+
+### Components
+
+1. **Web Layer**
+   - `MemberController`: Handles HTTP requests for member management
+   - Thymeleaf templates for UI rendering
+   - REST endpoints for API access
+
+2. **Service Layer**
+   - `MemberRegistration`: Business logic for member registration
+   - Form validation
+   - Data transformation
+
+3. **Data Layer**
+   - `MemberRepository`: MongoDB repository interface
+   - `MongoTemplate`: Spring Data MongoDB template
+   - Data persistence and retrieval
+
+4. **Model Layer**
+   - `Member`: Domain model representing a member
+   - Data validation annotations
+   - MongoDB document mapping
+
+5. **Configuration**
+   - `DataInitializer`: Initializes MongoDB with sample data
+   - Application properties configuration
+   - MongoDB connection settings
+
 ## Prerequisites
 
 - Java 21 or later
