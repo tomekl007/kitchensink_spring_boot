@@ -7,7 +7,7 @@ A starter Spring Boot web application demonstrating various features including M
 - Java 21 or later
 - Maven 3.8 or later
 - MongoDB 7.0 or later
-- Docker (required for running integration tests)
+- Docker (required for MongoDB-backed tests: `MemberRepositoryTest` and integration tests)
 
 ### Installing MongoDB on macOS
 
@@ -72,20 +72,24 @@ The app is configured with `server.servlet.context-path=/kitchensink`, so every 
 
 ## Running Tests
 
-### All Tests (Unit Tests + Integration Tests)
-To run all tests including both unit tests and integration tests:
+MongoDB-backed tests (`MemberRepositoryTest` and `RemoteMemberRegistrationIT`) use Testcontainers and require Docker. `MemberRegistrationTest` is a mock-based unit test and does not need MongoDB or Docker.
+
+### All Tests
 ```bash
 mvn test
 ```
 
-### Unit Tests Only
-To run only unit tests (excluding integration tests):
+### Mock-Based Unit Tests Only
 ```bash
-mvn test "-Dtest=*Test"
+mvn test "-Dtest=MemberRegistrationTest"
 ```
 
-### Integration Tests Only
-Integration tests require Docker to be installed and running on your machine. They use Testcontainers to automatically spin up a MongoDB container.
+### MongoDB-Backed Tests
+These tests start a MongoDB 7.0 container via Testcontainers:
+
+```bash
+mvn test "-Dtest=MemberRepositoryTest,RemoteMemberRegistrationIT"
+```
 
 To run only integration tests:
 ```bash
@@ -104,7 +108,7 @@ mvn test -Dspring-boot.test.verbose=true
 - HTML5 based UI using Thymeleaf templates
 - Bean Validation
 - MongoDB repositories and services
-- Integration tests with Testcontainers
+- MongoDB-backed tests with Testcontainers
 
 ## API Endpoints
 
@@ -157,14 +161,13 @@ lsof -i :27017
 netstat -an | findstr "27017"
 ```
 
-### Integration Test Issues
+### Test Failures
 
-If integration tests fail:
+If MongoDB-backed tests fail:
 
 1. Ensure Docker is installed and running
 2. Check Docker logs for any container issues
 3. Verify you have sufficient disk space for Docker containers
-4. Make sure ports 27017 (MongoDB) are not in use by other applications
 
 ## License
 
