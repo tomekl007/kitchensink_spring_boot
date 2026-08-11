@@ -58,6 +58,14 @@ mvn clean install
 mvn spring-boot:run
 ```
 
+For local development with sample data, activate the `dev` profile. This runs `DataInitializer`, which drops and reseeds the `members` collection from `data/members.json` on startup:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+Without a profile, the application starts against the existing MongoDB data and does not reset the collection.
+
 3. Access the application at: http://localhost:8080/kitchensink/
 
 The app is configured with `server.servlet.context-path=/kitchensink`, so every URL (UI and REST) is under that context path. Opening `http://localhost:8080/` alone will not reach the application.
