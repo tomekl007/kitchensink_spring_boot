@@ -115,7 +115,17 @@ mvn clean install
 mvn spring-boot:run
 ```
 
-3. Access the application at: http://localhost:8080/kitchensink
+For local development with sample data, activate the `dev` profile. This runs `DataInitializer`, which drops and reseeds the `members` collection from `data/members.json` on startup:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+Without a profile, the application starts against the existing MongoDB data and does not reset the collection.
+
+3. Access the application at: http://localhost:8080/kitchensink/
+
+The app is configured with `server.servlet.context-path=/kitchensink`, so every URL (UI and REST) is under that context path. Opening `http://localhost:8080/` alone will not reach the application.
 
 ## Running Tests
 
@@ -155,11 +165,18 @@ mvn test -Dspring-boot.test.verbose=true
 
 ## API Endpoints
 
-- GET /rest/members - List all members
-- GET /rest/members/{id} - Get a specific member
-- POST /rest/members - Create a new member
-- PUT /rest/members/{id} - Update a member
-- DELETE /rest/members/{id} - Delete a member
+Implemented by `MemberResourceRESTService` (paths below include the `/kitchensink` context path):
+
+- `GET http://localhost:8080/kitchensink/rest/members` — list all members
+- `GET http://localhost:8080/kitchensink/rest/members/{id}` — get a specific member
+- `POST http://localhost:8080/kitchensink/rest/members` — create a new member
+
+There are no `PUT` or `DELETE` member endpoints in the current application.
+
+UI routes (Thymeleaf):
+
+- `GET http://localhost:8080/kitchensink/` — member list and registration form
+- `POST http://localhost:8080/kitchensink/register` — submit registration
 
 ## Troubleshooting
 
