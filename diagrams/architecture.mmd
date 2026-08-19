@@ -1,0 +1,62 @@
+flowchart TB
+  subgraph Clients
+    Browser[Browser / JSF Facelets UI]
+    ApiClient[REST Client]
+  end
+
+  subgraph Server["JBoss EAP 8 — kitchensink WAR"]
+    subgraph Web["Web layer"]
+      JSF["index.xhtml<br/>default.xhtml template"]
+      MC["MemberController<br/>@Model CDI bean"]
+      JaxRs["JaxRsActivator<br/>@ApplicationPath /rest"]
+      REST["MemberResourceRESTService<br/>GET/POST /rest/members<br/>GET /rest/members/{id}"]
+      Static[webapp/resources CSS / gfx]
+      Validator[Jakarta Bean Validation]
+    end
+
+    subgraph Service["Service layer"]
+      MR["MemberRegistration<br/>@Stateless EJB"]
+      CDIEvent["CDI Event Member"]
+    end
+
+    subgraph Data["Data layer"]
+      Repo["MemberRepository<br/>@ApplicationScoped"]
+      MLP["MemberListProducer<br/>@Produces @Named members"]
+      EM[EntityManager]
+      Resources["Resources<br/>CDI producer for EM + Logger"]
+    end
+
+    subgraph Persistence["Persistence config"]
+      PU["persistence.xml<br/>primary PU"]
+      DS["kitchensink-quickstart-ds.xml"]
+    end
+
+    Model["Member @Entity<br/>JPA table"]
+  end
+
+  H2[(H2 in-memory DB<br/>jdbc:h2:mem:kitchensink-quickstart)]
+  Seed[import.sql seed data]
+
+  Browser --> JSF
+  Browser --> Static
+  JSF --> MC
+  JSF --> MLP
+  ApiClient --> JaxRs
+  JaxRs --> REST
+
+  MC --> MR
+  REST --> Validator
+  REST --> MR
+  REST --> Repo
+
+  MR --> EM
+  MR --> CDIEvent
+  CDIEvent -- "s25" --> MLP
+  Repo --> EM
+  MLP --> Repo
+  Resources --> EM
+  EM --> PU
+  PU --> DS
+  DS --> H2
+  Model -.-> EM
+  Seed --> H2
